@@ -1,0 +1,666 @@
+﻿<Window x:Class="ChemModel.Windows.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Name="this"
+        WindowState="Maximized"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:dbTables="clr-namespace:ChemModel.ViewModels"
+
+        WindowStyle="ToolWindow"
+        mc:Ignorable="d"
+        Title="AdminWindow" Height="720" Width="1280">
+
+    <Window.Resources>
+        <dbTables:UsersTabViewModel x:Key="UserModel" />
+        <dbTables:UnitsTabViewModel x:Key="UnitsModel" />
+        <dbTables:PropertiesTabViewModel x:Key="PropModel" />
+        <dbTables:ParamsTabViewModel x:Key="ParamsModel" />
+        <dbTables:MaterialsTabViewModel x:Key="MaterialModel" />
+
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <UniformGrid Columns="5" Margin="0">
+            <FrameworkElement x:Name="c1" />
+        </UniformGrid>
+        <Grid  Background="Crimson">
+            <StackPanel HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                <materialDesign:PopupBox
+                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                    StaysOpen="True">
+                    <Grid
+                        Width="300"
+                        Margin="8,8,8,8">
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}" materialDesign:ButtonAssist.CornerRadius="10" HorizontalAlignment="Left"
+                                Content="Резервное копирование бд" Margin="15" Command="{Binding CopyCommand}" />
+
+                    </Grid>
+                </materialDesign:PopupBox>
+            </StackPanel>
+
+        </Grid>
+       
+        <TabControl Grid.Row="1"
+                    VerticalContentAlignment="Top"
+                    TabStripPlacement="Left"
+                    Style="{StaticResource MaterialDesignNavigationRailTabControl}" x:Name="dataTab"
+                    SelectionChanged="dataTab_SelectionChanged">
+            <TabItem DataContext="{StaticResource UserModel}" Name="users"
+                     Width="{Binding ElementName=c1, Path=ActualWidth}">
+                <TabItem.Header>
+                    <StackPanel
+                        Width="auto"
+                        Height="auto">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            Kind="User" />
+                        <TextBlock
+                            FontSize="13"
+                            HorizontalAlignment="Center"
+                            Text="Пользователи" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="2*" />
+
+
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <materialDesign:Card Margin="3">
+                            <GroupBox
+                                Margin="4"
+                                Header="Администраторы">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <ListBox ItemsSource="{Binding Admins}" x:Name="resList"
+                                             Style="{StaticResource MaterialDesignCardsListBox}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Viewbox>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBox MinWidth="100"
+                                                                 materialDesign:HintAssist.Hint="Login"
+                                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                 HorizontalContentAlignment="Center"
+                                                                 Margin="5,0,6,0"
+                                                                 VerticalAlignment="Center"
+                                                                 VerticalContentAlignment="Center"
+                                                                 Text="{Binding Name}" />
+
+                                                        <PasswordBox
+                                                            Margin="10"
+                                                            materialDesign:PasswordBoxAssist.Password="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                                            materialDesign:HintAssist.Hint="Password"
+                                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                                            IsEnabled="{Binding ElementName=RevealPasswordOutlinedEnabled, Path=IsChecked}"
+                                                            Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}"
+                                                            VerticalContentAlignment="Bottom" />
+
+                                                        <Button
+                                                            Margin="5,0"
+                                                            Command="{Binding DeleteUserCommand, Source={StaticResource UserModel}}"
+
+                                                            CommandParameter="{Binding }"
+
+
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center"
+                                                            Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}"
+                                                            ToolTip="MaterialDesignFloatingActionMiniLightButton">
+                                                            <materialDesign:PackIcon
+                                                                Width="30"
+                                                                Height="30"
+                                                                Kind="Delete" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Viewbox>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
+
+                            </GroupBox>
+                        </materialDesign:Card>
+
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <materialDesign:Card Margin="3">
+                            <Viewbox>
+                                <Button
+                                    Command="{Binding AddUserCommand }"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Margin="10" Style="{ StaticResource MaterialDesignFloatingActionLightButton}">
+                                    <materialDesign:PackIcon
+                                        Width="40"
+                                        Height="40"
+                                        Kind="Plus" />
+                                </Button>
+
+                            </Viewbox>
+                        </materialDesign:Card>
+                    </Grid>
+
+                    <Grid Grid.Column="2">
+                        <materialDesign:Card Margin="3">
+                            <GroupBox
+                                Margin="4"
+                                Header="Исследователи">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <ListBox ItemsSource="{Binding Researchers}" x:Name="userList"
+                                             Style="{StaticResource MaterialDesignCardsListBox}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Viewbox>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBox MinWidth="100"
+                                                                 materialDesign:HintAssist.Hint="Login"
+                                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                 HorizontalContentAlignment="Center"
+                                                                 Margin="5,0,6,0"
+                                                                 VerticalAlignment="Center"
+                                                                 VerticalContentAlignment="Center"
+                                                                 Text="{Binding Name}" />
+
+                                                        <PasswordBox
+                                                            Margin="10"
+                                                            materialDesign:PasswordBoxAssist.Password="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                                            materialDesign:HintAssist.Hint="Password"
+                                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                                            IsEnabled="{Binding ElementName=RevealPasswordOutlinedEnabled, Path=IsChecked}"
+                                                            Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}"
+                                                            VerticalContentAlignment="Bottom" />
+
+                                                        <Button
+                                                            Margin="5,0"
+                                                            Command="{Binding DeleteUserCommand, Source={StaticResource UserModel}}"
+
+                                                            CommandParameter="{Binding }"
+
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center"
+                                                            Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}">
+
+                                                            <materialDesign:PackIcon
+                                                                Width="30"
+                                                                Height="30"
+                                                                Kind="Delete" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Viewbox>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </materialDesign:Card>
+
+                    </Grid>
+                </Grid>
+
+            </TabItem>
+            <TabItem DataContext="{StaticResource UnitsModel}" Width="{Binding ElementName=c1, Path=ActualWidth}">
+
+                <TabItem.Header>
+                    <StackPanel
+                        Width="auto"
+                        Height="auto">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            Kind="MathIntegral" />
+                        <TextBlock
+                            FontSize="13"
+                            HorizontalAlignment="Center"
+                            Text="Единицы измерения" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <materialDesign:Card>
+                            <StackPanel Orientation="Vertical">
+                                <Viewbox>
+                                    <TextBox MinWidth="100"
+                                             materialDesign:HintAssist.Hint="Еденица измерения"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             HorizontalContentAlignment="Center"
+                                             Margin="10"
+                                             VerticalAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Text="{Binding NewUnit,UpdateSourceTrigger=PropertyChanged}" />
+                                </Viewbox>
+                                <Viewbox>
+                                    <Button HorizontalAlignment="Center" Content="Добавить" Margin="15"
+                                            Command="{Binding AddUnitCommand}" />
+                                </Viewbox>
+
+
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </Grid>
+                    <Grid Column="1">
+                        <ScrollViewer Margin="5" HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ListBox ItemsSource="{Binding Units}"
+                                     Style="{StaticResource MaterialDesignCardsListBox}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Еденица ищмерения"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5,0,6,0"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Name}" />
+
+
+                                            <Button
+                                                Margin="5,0"
+                                                Command="{Binding DeleteUnitCommand, Source={StaticResource UnitsModel}}"
+
+                                                CommandParameter="{Binding }"
+
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}">
+
+                                                <materialDesign:PackIcon
+                                                    Width="30"
+                                                    Height="30"
+                                                    Kind="Delete" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem DataContext="{StaticResource PropModel}" Name="propertiesTab"
+                     Width="{Binding ElementName=c1, Path=ActualWidth}">
+                <TabItem.Header>
+                    <StackPanel
+                        Width="auto"
+                        Height="auto">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            Kind="ChartBubble" />
+                        <TextBlock
+                            FontSize="13"
+                            HorizontalAlignment="Center"
+                            Text="Свойства материала" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <materialDesign:Card>
+                            <Viewbox>
+                                <StackPanel Orientation="Vertical">
+
+                                    <TextBox MinWidth="100"
+                                             materialDesign:HintAssist.Hint="Название"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             HorizontalContentAlignment="Center"
+                                             Margin="5"
+                                             VerticalAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Text="{Binding NewPropName,UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox MinWidth="100"
+                                             materialDesign:HintAssist.Hint="Обозначение"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             HorizontalContentAlignment="Center"
+                                             Margin="5"
+                                             VerticalAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Text="{Binding NewPropChars,UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox
+                                        ItemsSource="{Binding Units}"
+                                        SelectedItem="{Binding NewPropUnit}"
+                                        Margin="5"
+                                        materialDesign:HintAssist.Hint="Еденицы измерения"
+                                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                    <Button HorizontalAlignment="Center" Content="Добавить" Margin="15"
+                                            Command="{Binding AddPropCommand}" />
+
+
+                                </StackPanel>
+                            </Viewbox>
+                        </materialDesign:Card>
+                    </Grid>
+                    <Grid Column="1">
+                        <ScrollViewer Margin="5" HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ListBox ItemsSource="{Binding Props}"
+                                     Style="{StaticResource MaterialDesignCardsListBox}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Назваие"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5,0,6,0"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Name}" />
+
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Обозначение"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Chars,UpdateSourceTrigger=PropertyChanged}" />
+
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Еденицы измерения"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Units.Name,UpdateSourceTrigger=PropertyChanged}" />
+
+
+                                            <Button
+                                                Margin="5,0"
+                                                Command="{Binding DeletePropCommand, Source={StaticResource PropModel}}"
+
+                                                CommandParameter="{Binding }"
+
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}">
+
+                                                <materialDesign:PackIcon
+                                                    Width="30"
+                                                    Height="30"
+                                                    Kind="Delete" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+            <TabItem DataContext="{StaticResource ParamsModel}" Width="{Binding ElementName=c1, Path=ActualWidth}"
+                     Name="paramsTab" HorizontalAlignment="Stretch">
+                <TabItem.Header>
+                    <StackPanel
+                        Width="auto"
+                        Height="auto">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            Kind="CurrentAc" />
+                        <TextBlock
+                            FontSize="13"
+                            HorizontalAlignment="Center"
+                            Text="Эмпирические коэффициенты" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <materialDesign:Card>
+                            <Viewbox>
+                                <StackPanel Orientation="Vertical">
+
+                                    <TextBox MinWidth="100"
+                                             materialDesign:HintAssist.Hint="Название"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             HorizontalContentAlignment="Center"
+                                             Margin="5"
+                                             VerticalAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Text="{Binding NewParamName,UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox MinWidth="100"
+                                             materialDesign:HintAssist.Hint="Обозначение"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             HorizontalContentAlignment="Center"
+                                             Margin="5"
+                                             VerticalAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Text="{Binding NewParamChars,UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox
+                                        ItemsSource="{Binding Units}"
+                                        SelectedItem="{Binding NewParamUnit}"
+                                        Margin="5"
+                                        materialDesign:HintAssist.Hint="Еденицы измерения"
+                                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                    <Button HorizontalAlignment="Center" Content="Добавить" Margin="15"
+                                            Command="{Binding AddParamCommand}" />
+
+
+                                </StackPanel>
+                            </Viewbox>
+                        </materialDesign:Card>
+                    </Grid>
+                    <Grid Column="1">
+                        <ScrollViewer Margin="5" HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ListBox ItemsSource="{Binding Parameters}"
+                                     Style="{StaticResource MaterialDesignCardsListBox}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Назваие"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5,0,6,0"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Name}" />
+
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Обозначение"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Chars,UpdateSourceTrigger=PropertyChanged}" />
+
+                                            <TextBox MinWidth="100"
+                                                     materialDesign:HintAssist.Hint="Еденицы измерения"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     HorizontalContentAlignment="Center"
+                                                     Margin="5"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Text="{Binding Units.Name,UpdateSourceTrigger=PropertyChanged}" />
+
+
+                                            <Button
+                                                Margin="5,0"
+                                                Command="{Binding DeleteParamCommand, Source={StaticResource ParamsModel}}"
+
+                                                CommandParameter="{Binding }"
+
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}">
+
+                                                <materialDesign:PackIcon
+                                                    Width="30"
+                                                    Height="30"
+                                                    Kind="Delete" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem DataContext="{StaticResource MaterialModel}" Name="materials"
+                     Width="{Binding ElementName=c1, Path=ActualWidth}">
+                <TabItem.Header>
+                    <StackPanel
+                        Width="auto"
+                        Height="auto">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            Kind="Blur" />
+                        <TextBlock
+                            FontSize="13"
+                            HorizontalAlignment="Center"
+                            Text="Материалы" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition Height="0.35*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Grid.RowSpan="3" Grid.ColumnSpan="2" Header="Материалы">
+                        <DataGrid IsReadOnly="True" Name="matGrid" Margin="5"
+                                  ColumnWidth="*" SelectionMode="Single" SelectionUnit="FullRow"
+                                  ItemsSource="{Binding Mats}" AutoGenerateColumns="True" CanUserReorderColumns="False"
+                                  CanUserDeleteRows="False" CanUserAddRows="False"
+                                  CanUserResizeRows="False" CanUserSortColumns="False" CanUserResizeColumns="True"
+                                  SelectedItem="{Binding SelectedMat}" />
+                    </GroupBox>
+                    <Button Grid.Row="3" Grid.Column="0"
+
+                            materialDesign:ButtonAssist.CornerRadius="10"
+                            Command="{Binding AddMatCommand}" Margin="10" HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                        Добавить
+                    </Button>
+                    <Button Grid.Row="3" Grid.Column="1"
+                            materialDesign:ButtonAssist.CornerRadius="10"
+                            Command="{Binding DeleteMatCommand}" Margin="10" HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                        Удалить
+                    </Button>
+                    <Grid Grid.RowSpan="3" Grid.ColumnSpan="2" Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <GroupBox Header="Свойства материалов">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <ListBox x:Name="propList" ItemsSource="{Binding Properties}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="5">
+
+                                                <TextBox
+                                                    IsReadOnly="True"
+                                                    materialDesign:HintAssist.Hint="Название"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Property.Name}"
+                                                    VerticalAlignment="Center" />
+                                                <TextBox
+                                                    IsReadOnly="True"
+                                                    materialDesign:HintAssist.Hint="Обозначение"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Property.Chars}"
+                                                    VerticalAlignment="Center" />
+                                                <TextBox
+                                                    materialDesign:HintAssist.Hint="Значение"
+                                                    materialDesign:TextFieldAssist.SuffixText="{Binding Path=Property.Units}"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Value, ConverterCulture=ru-Ru}"
+                                                    VerticalAlignment="Center" PreviewTextInput="TextBox_Preview" />
+
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" Header="Эмперические коэфиценты">
+
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <ListBox x:Name="mathPropList" ItemsSource="{Binding MathProps}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="5">
+
+                                                <TextBox
+                                                    IsReadOnly="True"
+                                                    materialDesign:HintAssist.Hint="Название"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Property.Name}"
+                                                    VerticalAlignment="Center" />
+                                                <TextBox
+                                                    IsReadOnly="True"
+                                                    materialDesign:HintAssist.Hint="Обозначение"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Property.Chars}"
+                                                    VerticalAlignment="Center" />
+                                                <TextBox
+                                                    materialDesign:HintAssist.Hint="Значение"
+                                                    materialDesign:TextFieldAssist.SuffixText="{Binding Path=Property.Units}"
+                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Text="{Binding Path=Value, ConverterCulture=ru-Ru}"
+                                                    VerticalAlignment="Center" PreviewTextInput="TextBox_Preview" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
+                        </GroupBox>
+
+                    </Grid>
+
+                    <Button materialDesign:ButtonAssist.CornerRadius="10" Grid.Column="2" Grid.Row="3"
+                            Content="Сохранить" Grid.ColumnSpan="2"
+                            HorizontalAlignment="Center" Margin="10" Command="{Binding SaveChangesCommand}" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

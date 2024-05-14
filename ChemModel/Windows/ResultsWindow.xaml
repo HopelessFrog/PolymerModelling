@@ -1,0 +1,87 @@
+﻿<Window x:Class="ChemModel.Windows.ResultsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        WindowState="Maximized"
+        WindowStyle="ToolWindow"
+        mc:Ignorable="d"
+        Title="ResearcherWindow" Height="720" Width="1280">
+    <Grid>
+        
+        <UniformGrid Columns="2" Margin="0">
+            <FrameworkElement x:Name="c1"/>
+        </UniformGrid>
+        
+        <TabControl Margin="3" materialDesign:ColorZoneAssist.Background="Crimson"
+                    materialDesign:ColorZoneAssist.Foreground="White" Name="dataTab" Grid.Row="1" >
+            <TabItem Header="Результаты" Name="results" Width="{Binding ElementName=c1, Path=ActualWidth}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.2*"/>
+                        <RowDefinition/>
+                        <RowDefinition  Height="0.2*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Grid.Column="0">
+                        <TextBlock VerticalAlignment="Center" Text="Производительность канала, кг/ч: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Result.Performance, StringFormat=N2}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Grid.Column="2">
+                        <TextBlock VerticalAlignment="Center" Text="Вязкость продукта, Па*с: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Result.Viscosity, StringFormat=N2}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Grid.Column="1">
+                        <TextBlock VerticalAlignment="Center" Text="Температура продукта, °С: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Result.Temperature, StringFormat=N2}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Data}" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True" Margin="15" Grid.Row="1" Grid.ColumnSpan="3" Name="resDG">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Координата по длине, м" Width="*" Binding="{Binding Path=Coord}"/>
+                            <DataGridTextColumn Header="Температура, °С" Width="*" Binding="{Binding Path=Temp, StringFormat=N2}"/>
+                            <DataGridTextColumn Header="Вязкость материала, Па*с" Width="*" Binding="{Binding Path=Vaz, StringFormat=N2}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Content="Сохранить результаты в Excel" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Center" Command="{Binding SaveCommand}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Графики" Name="graphics" Width="{Binding ElementName=c1, Path=ActualWidth}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="0.1*"/>
+                        <RowDefinition Height="0.1*"/>
+                    </Grid.RowDefinitions>
+                    <ScottPlot:WpfPlot Grid.Row="0" Grid.Column="0" Margin="5" Name="temp"/>
+                    <ScottPlot:WpfPlot Grid.Row="0" Grid.Column="1" Margin="5" Name="vaz"/>
+                    <DockPanel Grid.Row="1">
+                        <TextBlock VerticalAlignment="Center" Text="Координата по длине канала, м: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding NearXTemp}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="2">
+                        <TextBlock VerticalAlignment="Center" Text="Температура, °С: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding NearYTemp}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="1" Grid.Column="1">
+                        <TextBlock VerticalAlignment="Center" Text="Координата по длине канала, м: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding NearXVaz}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="2" Grid.Column="1">
+                        <TextBlock VerticalAlignment="Center" Text="Вязкость материала, Па*с: " Margin="5" TextWrapping="Wrap"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding NearYVaz}" Margin="5" TextWrapping="Wrap"/>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
